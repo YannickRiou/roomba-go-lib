@@ -127,7 +127,7 @@ func (this *Roomba) PlaySong(songNumber uint8) error {
 
 func (this *Roomba) SetMotors(mainBrushDir, sideBrushDir, mainBrush, vacuum, sideBrush uint8) error {
 
-	return this.Write(OpCodes["Motors"], mainBrushDir<<4|sideBrushDir<<3|mainBrush<<2|vacuum<<1|sideBrush)
+	return this.Write(OpCodes["Motors"], []byte{mainBrushDir<<4 | sideBrushDir<<3 | mainBrush<<2 | vacuum<<1 | sideBrush})
 }
 
 func (this *Roomba) SetMotorsPwm(mainBrushPwm, sideBrushPwm, vacuumPwm int16) error {
