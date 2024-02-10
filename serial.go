@@ -8,8 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-
-	"github.com/tarm/goserial"
 )
 
 // Packs the given data as big endian bytes.
@@ -26,7 +24,7 @@ func Pack(data []interface{}) []byte {
 
 // Configures and opens the given serial port.
 func (this *Roomba) Open(baud uint) error {
-	if baud != 115200 && baud != 19200 {
+	if baud != 57600 && baud != 19200 {
 		return errors.New(fmt.Sprintf("invalid baud rate: %d. Must be one of 115200, 19200", baud))
 	}
 
