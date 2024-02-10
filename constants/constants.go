@@ -16,10 +16,10 @@ var OpCodes = map[string]byte{
 	"Max":   136,
 	"Spot":  134,
 
-	"Seek_dock":  143,
-	"Schedule":   167,
-	"SetDayTime": 168,
-	"Power":      133,
+	"Seek_dock":   143,
+	"SetSchedule": 167,
+	"SetDayTime":  168,
+	"Power":       133,
 
 	// Actuator commands
 	"Drive":       137,
