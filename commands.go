@@ -100,13 +100,13 @@ func (this *Roomba) SeekDock() error {
 }
 
 func (this *Roomba) SetDatetime(day, hour, minute uint8) error {
-	if !(0 < day && day > 6) {
+	if 0 < day && day > 6 {
 		return fmt.Errorf("invalid day: %d", day)
 	}
-	if !(0 < hour && hour > 23) {
+	if 0 < hour && hour > 23 {
 		return fmt.Errorf("invalid hour: %d", hour)
 	}
-	if !(0 < minute && minute > 59) {
+	if 0 < minute && minute > 59 {
 		return fmt.Errorf("invalid minute: %d", minute)
 	}
 	return this.Write(OpCodes["SetDayTime"], Pack([]interface{}{day, hour, minute}))
