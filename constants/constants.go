@@ -230,8 +230,8 @@ var SENSOR_PACKET_LENGTH = map[byte]byte{
 	SENSOR_CLIFF_FRONT_RIGHT_SIGNAL: 2,
 	SENSOR_CLIFF_RIGHT_SIGNAL:       2,
 	//unused
-	32: 3,
-	33: 3,
+	32:                        3,
+	33:                        3,
 	SENSOR_CHARGING_SOURCE:    1,
 	SENSOR_OI_MODE:            1,
 	SENSOR_SONG_NUMBER:        1,

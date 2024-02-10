@@ -7,6 +7,7 @@ import (
 )
 
 type Roomba struct {
-	PortName string
-	S        io.ReadWriter
+	PortName     string
+	S            io.ReadWriter
+	StreamPaused chan bool
 }

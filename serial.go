@@ -8,8 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-
-	serial "github.com/tarm/goserial"
 )
 
 // Packs the given data as big endian bytes.
@@ -26,7 +24,7 @@ func Pack(data []interface{}) []byte {
 
 // Configures and opens the given serial port.
 func (this *Roomba) Open(baud uint) error {
-	if baud != 57600 && baud != 19200 {
+	if baud != 115200 && baud != 19200 {
 		return errors.New(fmt.Sprintf("invalid baud rate: %d. Must be one of 115200, 19200", baud))
 	}
 
@@ -47,16 +45,11 @@ func (this *Roomba) Write(opcode byte, p []byte) error {
 	log.Printf("Writing opcode: %v, data %v", opcode, p)
 	n, err := this.S.Write([]byte{opcode})
 	if n != 1 || err != nil {
-		log.Printf("failed writing opcode %d to serial interface", opcode)
-
 		return fmt.Errorf("failed writing opcode %d to serial interface",
 			opcode)
-
 	}
 	n, err = this.S.Write(p)
 	if n != len(p) || err != nil {
-		log.Printf("failed writing command to serial interface: % d\r\n", p)
-
 		return fmt.Errorf("failed writing command to serial interface: % d", p)
 	}
 	return nil
