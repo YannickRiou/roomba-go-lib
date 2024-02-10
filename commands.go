@@ -26,7 +26,7 @@ import (
 	"io"
 	"log"
 
-	"github.com/xa4a/go-roomba/constants"
+	"github.com/YannickRiou/roomba-go-lib/constants"
 )
 
 func to_byte(b bool) byte {

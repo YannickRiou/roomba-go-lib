@@ -5,8 +5,8 @@ import (
 	"io"
 	"testing"
 
-	"github.com/xa4a/go-roomba"
-	"github.com/xa4a/go-roomba/sim"
+	"github.com/YannickRiou/roomba-go-lib"
+	"github.com/YannickRiou/roomba-go-lib/sim"
 )
 
 var roombaSim *sim.RoombaSimulator
