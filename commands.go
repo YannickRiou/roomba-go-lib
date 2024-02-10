@@ -25,6 +25,7 @@ import (
 	"log"
 
 	"github.com/YannickRiou/roomba-go-lib/constants"
+	serial "github.com/YannickRiou/roomba-go-lib/serial"
 )
 
 func to_byte(b bool) byte {
@@ -99,7 +100,23 @@ func (this *Roomba) SeekDock() error {
 	return this.WriteByte(OpCodes["SeekDock"])
 }
 
-// TODO: Schedule, Set Day/Time.
+func (this *Roomba) SetDatetime(day, hour, minute int8) error {
+	if !(0 < day && day > 6) {
+		return fmt.Errorf("invalid day: %d", day)
+	}
+	if !(0 < hour && hour > 23) {
+		return fmt.Errorf("invalid hour: %d", hour)
+	}
+	if !(0 < minute && minute > 23) {
+		return fmt.Errorf("invalid minute: %d", minute)
+	}
+	return this.Write(OpCodes["SetDayTime"], serial.Pack([]interface{}{day, hour, minute}))
+}
+
+func (this *Roomba) SetSchedule(days, sunHour, sunMinute, monHour, monMinute, tueHour, tueMinute, wedHour, wedMinute, thuHour, thuMinute, friHour, friMinute, satHour, satMinute int8) error {
+
+	return this.Write(OpCodes["SetDayTime"], serial.Pack([]interface{}{days, sunHour, sunMinute, monHour, monMinute, tueHour, tueMinute, wedHour, wedMinute, thuHour, thuMinute, friHour, friMinute, satHour, satMinute}))
+}
 
 // Power command powers down Roomba.
 func (this *Roomba) Power() error {
@@ -126,7 +143,7 @@ func (this *Roomba) Drive(velocity, radius int16) error {
 	if !(-2000 <= radius && radius <= 2000) {
 		fmt.Errorf("invalid readius: %d", radius)
 	}
-	return this.Write(OpCodes["Drive"], Pack([]interface{}{velocity, radius}))
+	return this.Write(OpCodes["Drive"], serial.Pack([]interface{}{velocity, radius}))
 }
 
 // Stop commands is equivalent to Drive(0, 0).
@@ -146,7 +163,7 @@ func (this *Roomba) DirectDrive(right, left int16) error {
 		!(-500 <= left && left <= 500) {
 		return fmt.Errorf("invalid velocity. one of %d or %d", right, left)
 	}
-	return this.Write(OpCodes["DirectDrive"], Pack([]interface{}{right, left}))
+	return this.Write(OpCodes["DirectDrive"], serial.Pack([]interface{}{right, left}))
 }
 
 // TODO: Drive PWM, Motors, PWM Motors commands.
@@ -163,7 +180,7 @@ func (this *Roomba) LEDs(check_robot, dock, spot, debris bool, power_color, powe
 		led_bits <<= 1
 		led_bits |= to_byte(bit)
 	}
-	return this.Write(OpCodes["LEDs"], Pack([]interface{}{
+	return this.Write(OpCodes["LEDs"], serial.Pack([]interface{}{
 		led_bits, power_color, power_intensity}))
 }
 
