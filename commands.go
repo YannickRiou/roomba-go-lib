@@ -174,12 +174,12 @@ func (this *Roomba) Drive(velocity, radius int16) error {
 
 func (this *Roomba) DrivePWM(rightPWM, leftPWM int16) error {
 	if !(-255 <= rightPWM && rightPWM <= 255) {
-		return fmt.Errorf("invalid rightPWM: %d", velocity)
+		return fmt.Errorf("invalid rightPWM: %d", rightPWM)
 	}
 	if !(-255 <= leftPWM && leftPWM <= 255) {
-		fmt.Errorf("invalid leftPWM: %d", radius)
+		fmt.Errorf("invalid leftPWM: %d", leftPWM)
 	}
-	return this.Write(OpCodes["DrivePwm"], Pack([]interface{}{songNumber}))
+	return this.Write(OpCodes["DrivePwm"], Pack([]interface{}{rightPWM, leftPWM}))
 }
 
 // Stop commands is equivalent to Drive(0, 0).
