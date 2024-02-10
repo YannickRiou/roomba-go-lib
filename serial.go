@@ -8,6 +8,8 @@ import (
 	"errors"
 	"fmt"
 	"log"
+
+	serial "github.com/tarm/goserial"
 )
 
 // Packs the given data as big endian bytes.
