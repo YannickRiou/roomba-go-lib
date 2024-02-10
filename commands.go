@@ -21,7 +21,9 @@
 package roomba
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"log"
 
 	"github.com/YannickRiou/roomba-go-lib/constants"
@@ -43,7 +45,7 @@ var OpCodes = constants.OpCodes
 // MakeRoomba initializes a new Roomba structure and sets up a serial port.
 // By default, Roomba communicates at 115200 baud.
 func MakeRoomba(port_name string) (*Roomba, error) {
-	roomba := &Roomba{PortName: port_name}
+	roomba := &Roomba{PortName: port_name, StreamPaused: make(chan bool, 1)}
 	baud := uint(115200)
 	err := roomba.Open(baud)
 	return roomba, err
@@ -241,4 +243,154 @@ func (this *Roomba) Sensors(packet_id byte) ([]byte, error) {
 		}
 	}
 	return result, nil
+}
+
+// QueryList command lets you ask for a list of sensor packets. The result is
+// returned once, as in the Sensors command. The robot returns the packets in
+/// the order you specify.
+func (this *Roomba) QueryList(packet_ids []byte) ([][]byte, error) {
+	for _, packet_id := range packet_ids {
+		_, ok := constants.SENSOR_PACKET_LENGTH[packet_id]
+		if !ok {
+			return [][]byte{}, fmt.Errorf("unknown packet id requested: %d", packet_id)
+		}
+	}
+
+	b := new(bytes.Buffer)
+	b.WriteByte(byte(len(packet_ids)))
+	b.Write(packet_ids)
+	this.Write(OpCodes["QueryList"], b.Bytes())
+
+	var err error
+	var n int
+	result := make([][]byte, len(packet_ids))
+	for i, packet_id := range packet_ids {
+		bytes_to_read := constants.SENSOR_PACKET_LENGTH[packet_id]
+		result[i] = make([]byte, bytes_to_read)
+		err, n = nil, 0
+		for byte(n) < bytes_to_read {
+			result_view := result[i][n:]
+			bytes_to_read -= byte(n)
+			n, err = this.Read(result_view)
+			if err != nil {
+				return result, fmt.Errorf("failed reading sensors data for packet id %d: %s", packet_id, err)
+			}
+		}
+	}
+	return result, nil
+}
+
+// PauseStream command lets you stop steam without clearing the list of
+// requested packets.
+func (this *Roomba) PauseStream() {
+	this.StreamPaused <- true
+}
+
+func (this *Roomba) ReadStream(packet_ids []byte, out chan<- [][]byte) {
+	var data_length byte
+	for _, packet_id := range packet_ids {
+		packet_length, ok := constants.SENSOR_PACKET_LENGTH[packet_id]
+		if !ok {
+			log.Printf("unknown packet id requested: %d", packet_id)
+			return
+		}
+		data_length += packet_length
+	}
+
+	// Input buffer. 3 is for 19, N-bytes and checksum.
+	buf := make([]byte, data_length+byte(len(packet_ids))+3)
+
+	for {
+	Loop:
+		select {
+		case <-this.StreamPaused:
+			// Pause stream.
+			this.Write(OpCodes["ResumeStream"], []byte{0})
+			close(out)
+			return
+		default:
+			// Read single stream frame.
+			bytes_read := 0
+			for bytes_read < len(buf) {
+				n, err := this.S.Read(buf[bytes_read:])
+				if n != 0 {
+					bytes_read += n
+				}
+				if err != nil {
+					if err == io.EOF {
+						return
+					}
+					goto Loop
+				}
+			}
+			// Process frame.
+			buf_r := bytes.NewReader(buf)
+			if b, err := buf_r.ReadByte(); err != nil || b != 19 {
+				log.Fatalf("stream data doesn't start with header 19")
+				return
+			}
+			if b, err := buf_r.ReadByte(); err != nil || b != byte(len(buf)-3) {
+				log.Fatalf("invalid N-bytes: %d, expected %d.", buf[1],
+					len(buf)-3)
+			}
+
+			result := make([][]byte, len(packet_ids))
+
+			i := 0
+			// Used for verifying checksum.
+			sum := byte(len(buf) - 3) // N-bytes
+			packet_id, err := buf_r.ReadByte()
+			for ; err == nil; packet_id, err = buf_r.ReadByte() {
+				sum += packet_id
+				bytes_to_read := int(constants.SENSOR_PACKET_LENGTH[packet_id])
+				bytes_read := 0
+				result[i] = make([]byte, bytes_to_read)
+
+				for bytes_to_read > 0 {
+					n, err := buf_r.Read(result[i][bytes_read:])
+					bytes_read += n
+					bytes_to_read -= n
+					if err != nil {
+						log.Fatalf("error reading packet data")
+					}
+				}
+				for _, b := range result[i] {
+					sum += b
+				}
+				i += 1
+				if buf_r.Len() == 1 {
+					break
+				}
+			}
+
+			expected_checksum, err := buf_r.ReadByte()
+			if err != nil {
+				log.Fatalf("missing checksum")
+			}
+			sum += expected_checksum
+			if sum != 0 {
+				log.Fatalf("computed checksum didn't match: %d", sum)
+			}
+			out <- result
+		}
+	}
+}
+
+// Stream command starts a stream of data packets. The list of packets
+// requested is sent every 15 ms, which is the rate Roomba uses to update data.
+// This method of requesting sensor data is best if you are controlling Roomba
+// over a wireless network (which has poor real-time characteristics) with
+// software running on a desktop computer.
+func (this *Roomba) Stream(packet_ids []byte) (<-chan [][]byte, error) {
+	b := new(bytes.Buffer)
+	b.WriteByte(byte(len(packet_ids)))
+	b.Write(packet_ids)
+	err := this.Write(OpCodes["Stream"], b.Bytes())
+	if err != nil {
+		return nil, err
+	}
+
+	out := make(chan [][]byte)
+	go this.ReadStream(packet_ids, out)
+	return out, nil
 }
