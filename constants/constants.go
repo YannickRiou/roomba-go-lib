@@ -40,6 +40,7 @@ var OpCodes = map[string]byte{
 	"QueryList":    149,
 	"Stream":       148,
 	"ResumeStream": 150,
+	"Stop":         173,
 }
 
 // SENSOR_* constants define the packet IDs for declared sensor packets.

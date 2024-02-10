@@ -147,7 +147,7 @@ func (this *Roomba) Drive(velocity, radius int16) error {
 
 // Stop commands is equivalent to Drive(0, 0).
 func (this *Roomba) Stop() error {
-	return this.Drive(0, 0)
+	return this.WriteByte(OpCodes["Stop"])
 }
 
 // DirectDrive command lets you control the forward and backward motion of
