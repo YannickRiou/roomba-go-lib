@@ -117,6 +117,14 @@ func (this *Roomba) SetSchedule(days, sunHour, sunMinute, monHour, monMinute, tu
 	return this.Write(OpCodes["SetSchedule"], Pack([]interface{}{days, sunHour, sunMinute, monHour, monMinute, tueHour, tueMinute, wedHour, wedMinute, thuHour, thuMinute, friHour, friMinute, satHour, satMinute}))
 }
 
+func (this *Roomba) RecordSong(songNumber, songLenght, note1, note1Duration, note2, note2Duration, note3, note3Duration, note4, note4Duration, note5, note5Duration, note6, note6Duration, note7, note7Duration, note8, note8Duration, note9, note9Duration, note10, note10Duration, note11, note11Duration, note12, note12Duration, note13, note13Duration, note14, note14Duration, note15, note15Duration, note16, note16Duration uint8) error {
+	return this.Write(OpCodes["Song"], Pack([]interface{}{songNumber, songLenght, note1, note1Duration, note2, note2Duration, note3, note3Duration, note4, note4Duration, note5, note5Duration, note6, note6Duration, note7, note7Duration, note8, note8Duration, note9, note9Duration, note10, note10Duration, note11, note11Duration, note12, note12Duration, note13, note13Duration, note14, note14Duration, note15, note15Duration, note16, note16Duratione}))
+}
+
+func (this *Roomba) PlaySong(songNumber uint8) error {
+	return this.Write(OpCodes["Play"], Pack([]interface{}{songNumber}))
+}
+
 // Power command powers down Roomba.
 func (this *Roomba) Power() error {
 	return this.WriteByte(OpCodes["Power"])
@@ -182,8 +190,6 @@ func (this *Roomba) LEDs(check_robot, dock, spot, debris bool, power_color, powe
 	return this.Write(OpCodes["LEDs"], Pack([]interface{}{
 		led_bits, power_color, power_intensity}))
 }
-
-// TODO: Scheduling LEDs, Digit LEDs ASCII, Buttons, Song, Play.
 
 // Sensors command requests the OI to send a packet of sensor data bytes. There
 // are 58 different sensor data packets. Each provides a value of a specific
