@@ -43,7 +43,7 @@ var OpCodes = constants.OpCodes
 // MakeRoomba initializes a new Roomba structure and sets up a serial port.
 // By default, Roomba communicates at 115200 baud.
 func MakeRoomba(port_name string) (*Roomba, error) {
-	roomba := &Roomba{PortName: port_name, StreamPaused: make(chan bool, 1)}
+	roomba := &Roomba{PortName: port_name}
 	baud := uint(115200)
 	err := roomba.Open(baud)
 	return roomba, err
