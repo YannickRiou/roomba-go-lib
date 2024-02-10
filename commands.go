@@ -99,7 +99,7 @@ func (this *Roomba) SeekDock() error {
 	return this.WriteByte(OpCodes["SeekDock"])
 }
 
-func (this *Roomba) SetDatetime(day, hour, minute int8) error {
+func (this *Roomba) SetDatetime(day, hour, minute uint8) error {
 	if !(0 < day && day > 6) {
 		return fmt.Errorf("invalid day: %d", day)
 	}
@@ -112,7 +112,7 @@ func (this *Roomba) SetDatetime(day, hour, minute int8) error {
 	return this.Write(OpCodes["SetDayTime"], Pack([]interface{}{day, hour, minute}))
 }
 
-func (this *Roomba) SetSchedule(days, sunHour, sunMinute, monHour, monMinute, tueHour, tueMinute, wedHour, wedMinute, thuHour, thuMinute, friHour, friMinute, satHour, satMinute int8) error {
+func (this *Roomba) SetSchedule(days, sunHour, sunMinute, monHour, monMinute, tueHour, tueMinute, wedHour, wedMinute, thuHour, thuMinute, friHour, friMinute, satHour, satMinute uint8) error {
 
 	return this.Write(OpCodes["SetDayTime"], Pack([]interface{}{days, sunHour, sunMinute, monHour, monMinute, tueHour, tueMinute, wedHour, wedMinute, thuHour, thuMinute, friHour, friMinute, satHour, satMinute}))
 }
