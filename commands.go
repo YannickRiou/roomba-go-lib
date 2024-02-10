@@ -175,6 +175,7 @@ func (this *Roomba) LEDs(check_robot, dock, spot, debris bool, power_color, powe
 // sensor or group of sensors.
 func (this *Roomba) Sensors(packet_id byte) ([]byte, error) {
 	bytes_to_read, ok := constants.SENSOR_PACKET_LENGTH[packet_id]
+	fmt.Printf("Number of byte to read is : %d", bytes_to_read)
 	if !ok {
 		return []byte{}, fmt.Errorf("unknown packet id requested: %d", packet_id)
 	}
