@@ -118,7 +118,7 @@ func (this *Roomba) SetSchedule(days, sunHour, sunMinute, monHour, monMinute, tu
 }
 
 func (this *Roomba) RecordSong(songNumber, songLenght, note1, note1Duration, note2, note2Duration, note3, note3Duration, note4, note4Duration, note5, note5Duration, note6, note6Duration, note7, note7Duration, note8, note8Duration, note9, note9Duration, note10, note10Duration, note11, note11Duration, note12, note12Duration, note13, note13Duration, note14, note14Duration, note15, note15Duration, note16, note16Duration uint8) error {
-	return this.Write(OpCodes["Song"], Pack([]interface{}{songNumber, songLenght, note1, note1Duration, note2, note2Duration, note3, note3Duration, note4, note4Duration, note5, note5Duration, note6, note6Duration, note7, note7Duration, note8, note8Duration, note9, note9Duration, note10, note10Duration, note11, note11Duration, note12, note12Duration, note13, note13Duration, note14, note14Duration, note15, note15Duration, note16, note16Duratione}))
+	return this.Write(OpCodes["Song"], Pack([]interface{}{songNumber, songLenght, note1, note1Duration, note2, note2Duration, note3, note3Duration, note4, note4Duration, note5, note5Duration, note6, note6Duration, note7, note7Duration, note8, note8Duration, note9, note9Duration, note10, note10Duration, note11, note11Duration, note12, note12Duration, note13, note13Duration, note14, note14Duration, note15, note15Duration, note16, note16Duration}))
 }
 
 func (this *Roomba) PlaySong(songNumber uint8) error {
