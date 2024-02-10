@@ -25,7 +25,7 @@ import (
 	"log"
 
 	"github.com/YannickRiou/roomba-go-lib/constants"
-	"github.com/YannickRiou/roomba-go-lib/serial"
+	serial "github.com/YannickRiou/roomba-go-lib/roomba"
 )
 
 func to_byte(b bool) byte {
