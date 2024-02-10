@@ -125,6 +125,25 @@ func (this *Roomba) PlaySong(songNumber uint8) error {
 	return this.Write(OpCodes["Play"], Pack([]interface{}{songNumber}))
 }
 
+func (this *Roomba) SetMotors(mainBrushDir, sideBrushDir, mainBrush, vacuum, sideBrush uint8) error {
+
+	return this.Write(OpCodes["Motors"], Pack([]interface{}{mainBrushDir, sideBrushDir, mainBrush, vacuum, sideBrush}))
+}
+
+func (this *Roomba) SetMotorsPwm(mainBrushPwm, sideBrushPwm, vacuumPwm int16) error {
+
+	if !(-127 <= mainBrushPwm && mainBrushPwm <= 127) {
+		return fmt.Errorf("invalid mainBrushPwm: %d", mainBrushPwm)
+	}
+	if !(-127 <= sideBrushPwm && sideBrushPwm <= 127) {
+		return fmt.Errorf("invalid sideBrushPwm: %d", sideBrushPwm)
+	}
+	if !(-127 <= vacuumPwm && vacuumPwm <= 127) {
+		fmt.Errorf("invalid vacuumPwm: %d", vacuumPwm)
+	}
+	return this.Write(OpCodes["PwmMotors"], Pack([]interface{}{mainBrushPwm, sideBrushPwm, vacuumPwm}))
+}
+
 // Power command powers down Roomba.
 func (this *Roomba) Power() error {
 	return this.WriteByte(OpCodes["Power"])
@@ -153,6 +172,16 @@ func (this *Roomba) Drive(velocity, radius int16) error {
 	return this.Write(OpCodes["Drive"], Pack([]interface{}{velocity, radius}))
 }
 
+func (this *Roomba) DrivePWM(rightPWM, leftPWM int16) error {
+	if !(-255 <= rightPWM && rightPWM <= 255) {
+		return fmt.Errorf("invalid rightPWM: %d", velocity)
+	}
+	if !(-255 <= leftPWM && leftPWM <= 255) {
+		fmt.Errorf("invalid leftPWM: %d", radius)
+	}
+	return this.Write(OpCodes["DrivePwm"], Pack([]interface{}{songNumber}))
+}
+
 // Stop commands is equivalent to Drive(0, 0).
 func (this *Roomba) Stop() error {
 	return this.WriteByte(OpCodes["Stop"])
@@ -172,8 +201,6 @@ func (this *Roomba) DirectDrive(right, left int16) error {
 	}
 	return this.Write(OpCodes["DirectDrive"], Pack([]interface{}{right, left}))
 }
-
-// TODO: Drive PWM, Motors, PWM Motors commands.
 
 // LEDs command controls the LEDs common to all models of Roomba 500. The
 // Clean/Power LED is specified by two data bytes: one for the color and the
