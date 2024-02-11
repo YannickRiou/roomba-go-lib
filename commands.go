@@ -132,19 +132,20 @@ func (this *Roomba) SetMotors(mainBrushDir, sideBrushDir, mainBrush, vacuum, sid
 	return this.Write(OpCodes["Motors"], []byte{mainBrushDir<<4 | sideBrushDir<<3 | mainBrush<<2 | vacuum<<1 | sideBrush})
 }
 
-func (this *Roomba) SetMotorsPwm(mainBrushPwm, sideBrushPwm, vacuumPwm int16) error {
+// Not support on Roomba 500 series (Roomba 530)
+// func (this *Roomba) SetMotorsPwm(mainBrushPwm, sideBrushPwm, vacuumPwm int16) error {
 
-	if !(-127 <= mainBrushPwm && mainBrushPwm <= 127) {
-		return fmt.Errorf("invalid mainBrushPwm: %d", mainBrushPwm)
-	}
-	if !(-127 <= sideBrushPwm && sideBrushPwm <= 127) {
-		return fmt.Errorf("invalid sideBrushPwm: %d", sideBrushPwm)
-	}
-	if !(-127 <= vacuumPwm && vacuumPwm <= 127) {
-		fmt.Errorf("invalid vacuumPwm: %d", vacuumPwm)
-	}
-	return this.Write(OpCodes["PwmMotors"], Pack([]interface{}{mainBrushPwm, sideBrushPwm, vacuumPwm}))
-}
+// 	if !(-127 <= mainBrushPwm && mainBrushPwm <= 127) {
+// 		return fmt.Errorf("invalid mainBrushPwm: %d", mainBrushPwm)
+// 	}
+// 	if !(-127 <= sideBrushPwm && sideBrushPwm <= 127) {
+// 		return fmt.Errorf("invalid sideBrushPwm: %d", sideBrushPwm)
+// 	}
+// 	if !(0 <= vacuumPwm && vacuumPwm <= 127) {
+// 		fmt.Errorf("invalid vacuumPwm: %d", vacuumPwm)
+// 	}
+// 	return this.Write(OpCodes["PwmMotors"], Pack([]interface{}{mainBrushPwm, sideBrushPwm, vacuumPwm}))
+// }
 
 // Power command powers down Roomba.
 func (this *Roomba) Power() error {
